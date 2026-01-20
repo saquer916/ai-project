@@ -10,4 +10,4 @@ This project focuses on predicting stock prices using machine learning technique
 
 ## How to Run
 1. Install dependencies using `pip install -r requirements.txt`
-2. Run `src/main.py` to start the project.
+2. Run `streamlit run app.py` to start the project.
