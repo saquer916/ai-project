@@ -1,19 +1,19 @@
-streamlit==1.26.0
+streamlit
 
-yfinance==0.2.25
+yfinance
 
-pandas==2.1.2
+pandas
 
-numpy==1.26.4
+numpy
 
-scikit-learn==1.3.2
+scikit-learn
 
-xgboost==2.0.2
+xgboost
 
-pyyaml==6.0
+pyyaml
 
-joblib==1.3.2
+joblib
 
-matplotlib==3.8.1
+matplotlib
 
-seaborn==0.13.0
+seaborn
