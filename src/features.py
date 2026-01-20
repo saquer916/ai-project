@@ -1,19 +1,42 @@
 import pandas as pd
+import numpy as np
 
+def feature_engineering(df):
+    df = df.copy()
 
-def feature_engineering(stock_signals, supplier_risk_scores, customer_opportunity_scores, product_categories):
-    \"\"\" Convert stock signals into machine learning features. \"\"\"  
+    # ----------------------------
+    # 1. Create buy/sell signals based on supplier & customer signals
+    # ----------------------------
+    # Example: buy if customer_signal high and supplier_signal low, sell if opposite
+    df['buy_signal'] = ((df['customer_signal'] > 0.6) & (df['supplier_signal'] < 0.4)).astype(int)
+    df['sell_signal'] = ((df['customer_signal'] < 0.4) & (df['supplier_signal'] > 0.6)).astype(int)
 
-    # Create signal strength and direction indicators
-    stock_signals['signal_strength'] = (stock_signals['buy_signal'] - stock_signals['sell_signal']).abs()
-    stock_signals['direction'] = stock_signals['buy_signal'] - stock_signals['sell_signal']
+    # ----------------------------
+    # 2. Derived signal features
+    # ----------------------------
+    df['signal_strength'] = (df['buy_signal'] - df['sell_signal']).abs()
+    df['direction'] = df['buy_signal'] - df['sell_signal']
 
-    # Combine supplier and customer scores into features
-    stock_signals['supplier_risk_score'] = supplier_risk_scores
-    stock_signals['customer_opportunity_score'] = customer_opportunity_scores
+    # ----------------------------
+    # 3. Optionally create a synthetic product category
+    # ----------------------------
+    if 'product_category' not in df.columns:
+        categories = ['steel components', 'car parts', 'electronics', 'chemicals', 'textiles']
+        df['product_category'] = np.random.choice(categories, size=len(df))
 
-    # One-hot encoding of product categories
-    category_dummies = pd.get_dummies(product_categories, prefix='category')
-    stock_signals = pd.concat([stock_signals, category_dummies], axis=1)
+    category_dummies = pd.get_dummies(df['product_category'], prefix='category')
+    df = pd.concat([df, category_dummies], axis=1)
 
-    return stock_signals
+    # ----------------------------
+    # 4. Final feature list
+    # ----------------------------
+    feature_cols = [
+        'supplier_signal',
+        'customer_signal',
+        'buy_signal',
+        'sell_signal',
+        'signal_strength',
+        'direction'
+    ] + list(category_dummies.columns)
+
+    return df, feature_cols
