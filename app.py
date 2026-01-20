@@ -176,30 +176,37 @@ elif mode == "Real-time Inference":
                 col1, col2, col3 = st.columns(3)
                 col1.metric(
                     "Price Recommendation",
-                    f"{result['price_recommendation_pct']: +.1f}%",
+                    f"{result['price_recommendation_pct']:+.1f}%",
                     delta=result['price_recommendation_pct']
                 )
-                col2.metric("Confidence", f"{result['confidence']:. 1%}")
-                col3.metric("Expected Profit Impact", f"{result['predicted_profit_impact']: +.2f}%")
+                col2.metric("Confidence", f"{result['confidence']:+.1%}")
+                col3.metric("Expected Profit Impact", f"{result['predicted_profit_impact']:+.2f}%")
                 
                 # Supplier insights
                 st.subheader("Supplier Signals")
                 for sup in result['suppliers']:
                     col1, col2, col3 = st.columns(3)
                     col1.write(f"**{sup['name']}** ({sup['ticker']})")
-                    col2.metric("30d Move", f"{sup['pct_30d']: +.1f}%")
+                    pct_30d = sup.get('pct_30d')
+                    if pct_30d is not None:
+                        col2.metric("30d Move", f"{pct_30d:+.1f}%")
+                    else:
+                        col2.metric("30d Move", "N/A")
                 
                 # Customer insights
                 st. subheader("Customer Signals")
                 for cust in result['customers']:
                     col1, col2, col3 = st.columns(3)
                     col1.write(f"**{cust['name']}** ({cust['ticker']})")
-                    col2.metric("30d Move", f"{cust['pct_30d']:+.1f}%")
-                
+                    pct_30d = cust.get('pct_30d')
+                    if pct_30d is not None:
+                        col2.metric("30d Move", f"{pct_30d:+.1f}%")
+                    else:
+                        col2.metric("30d Move", "N/A")
                 # Reasoning
                 st.subheader("Recommendation Logic")
                 st.info(
-                    f"Model predicts ${result['predicted_profit_impact']: +.2f}% profit impact.  "
+                    f"Model predicts ${result['predicted_profit_impact']:+.2f}% profit impact.  "
                     f"With {result['confidence']:.0%} confidence, recommend "
                     f"{result['price_recommendation_pct']:+.1f}% price adjustment."
                 )
